@@ -1,0 +1,24 @@
+{
+  "anchors": [
+    "B Left-first paragraph",
+    "B Left-second paragraph",
+    "B Right-first paragraph",
+    "B Right-second paragraph"
+  ],
+  "headings": [
+    "A Two-Column Study of Biosignal Transmission",
+    "1. Introduction",
+    "2. Quantitative Results"
+  ],
+  "tables": [
+    "ECG100",
+    "ECG105"
+  ],
+  "table_shape": [
+    7,
+    4
+  ],
+  "equations": [],
+  "figures": 0,
+  "expected_stitches": 1
+}

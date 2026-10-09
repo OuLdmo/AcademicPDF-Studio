@@ -1,0 +1,4 @@
+-r requirements.txt
+# Heavy optional model dependencies; install only on machines that need equation OCR.
+# Downloading checkpoint weights may need an initial network connection.
+pix2tex>=0.1.2

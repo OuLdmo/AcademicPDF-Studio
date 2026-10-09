@@ -1,0 +1,17 @@
+{
+  "anchors": [
+    "C Left-first paragraph",
+    "C Left-second paragraph",
+    "C Right-first paragraph",
+    "C Right-second paragraph"
+  ],
+  "headings": [
+    "A Two-Column Study of Biosignal Transmission",
+    "1. Introduction"
+  ],
+  "tables": [],
+  "equations": [
+    "E = m c^2"
+  ],
+  "figures": 1
+}

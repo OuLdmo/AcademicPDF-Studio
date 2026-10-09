@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "academicpdf-studio"
+version = "0.4.1"
+description = "Local-first academic PDF translation to editable Markdown, PDF and TXT"
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = ["PyMuPDF>=1.24,<2", "reportlab>=4.0,<5", "Pillow>=10,<13", "requests>=2.31,<3", "tqdm>=4.65,<5"]
+
+[project.optional-dependencies]
+docling = ["docling>=2.20"]
+openai = ["openai>=1.50,<3"]
+build = ["pyinstaller>=6.8"]
+test = ["pytest>=8.0", "numpy>=1.26", "scikit-image>=0.22"]
+math = ["pix2tex>=0.1"]
+free = ["argostranslate>=1.9,<2"]
+
+[project.scripts]
+paperstudio = "paperstudio.cli:main"
+paperstudio-web = "paperstudio.web:main"
+
+[tool.setuptools.packages.find]
+include = ["paperstudio*"]
+
+[tool.setuptools.package-data]
+paperstudio = ["web_static/*.html", "web_static/*.css", "web_static/*.js"]

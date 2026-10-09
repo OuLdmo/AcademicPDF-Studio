@@ -1,0 +1,49 @@
+name: Build Windows Web EXE (CMD and HTTP smoke)
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  windows-x64:
+    runs-on: windows-2022
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: x64
+      - name: Run every CMD launcher without installing dependencies
+        shell: pwsh
+        run: |
+          $env:ACADEMICPDF_LAUNCHER_SMOKE = '1'
+          $launchers = @('Start-Web.cmd','Start-Desktop.cmd','Build-Windows-Web.cmd','Build-Windows-All.cmd','Diagnose-Windows.cmd','启动网页版.bat','启动图形界面.bat','构建Windows_网页版EXE.bat','构建Windows_EXE.bat','诊断环境.bat','Install-Argos.cmd')
+          foreach ($launcher in $launchers) {
+            Write-Host "Checking $launcher"
+            & cmd.exe /d /c "call `"$launcher`""
+            if ($LASTEXITCODE -ne 0) { throw "CMD startup failed: $launcher" }
+          }
+      - name: Install dependencies
+        run: python -m pip install -r requirements-build.txt
+      - name: Run tests
+        run: python -m pytest tests -q
+      - name: Build browser application (entire folder is portable)
+        run: python -m PyInstaller --clean --noconfirm --onedir --name AcademicPDF-Web --add-data "paperstudio/web_static;paperstudio/web_static" --collect-submodules pymupdf studio_web.py
+      - name: Smoke-test packaged EXE (imports, static assets, HTTP)
+        shell: pwsh
+        run: |
+          python -c "from pathlib import Path; from tools.windows_bootstrap import smoke_exe; smoke_exe(Path('dist/AcademicPDF-Web/AcademicPDF-Web.exe').resolve())"
+      - name: Check ASCII CRLF batch compatibility
+        shell: pwsh
+        run: python -m pytest tests/test_windows_launchers.py -q
+      - name: Package Windows executable and dependencies
+        shell: pwsh
+        run: Compress-Archive -Path 'dist/AcademicPDF-Web' -DestinationPath 'AcademicPDF-Web-Windows-x64.zip' -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AcademicPDF-Web-Windows-x64
+          path: AcademicPDF-Web-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 30

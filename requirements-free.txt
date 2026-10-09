@@ -1,0 +1,2 @@
+# Offline machine translation; requires separately installed en→zh language model
+argostranslate>=1.9,<2

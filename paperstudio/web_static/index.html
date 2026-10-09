@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="csrf-token" content="__CSRF_TOKEN__"/>
+<title>AcademicPDF Studio · 本地学术文献转换工作台</title>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<div class="shell">
+<header class="topbar"><div class="brand"><div class="logomark">A<span>✦</span></div><div><strong>AcademicPDF <em>Studio</em></strong><small>Academic PDF → 中文 Markdown · PDF · TXT</small></div></div><div class="header-right"><span class="status-dot"></span> 仅在本机运行 <span class="version">v0.4.1</span></div></header>
+<main>
+  <div class="intro"><span class="eyebrow">LOCAL-FIRST · ACADEMIC TRANSLATION</span><h1>让论文阅读，不再被格式困住。</h1><p>上传 PDF，保留学术结构，按需进行本地中文翻译。导出可编辑 Markdown、双语阅读 PDF 与纯文本。</p></div>
+  <div class="layout">
+    <section class="panel form-panel" aria-label="转换选项">
+      <div class="panel-heading"><div><h2>创建转换任务</h2><p>PDF 在本机解析；远程翻译服务会接收待翻译文本。</p></div><span class="step">01 / 配置</span></div>
+      <form id="upload-form">
+        <label class="dropzone" id="dropzone" for="files"><input id="files" type="file" accept=".pdf,application/pdf" multiple hidden/><span class="drop-ico">⇧</span><strong>点击选择 PDF，或拖拽到这里</strong><small>支持单文件 / 多文件，单次最多 12 个 · 总计不超过 80 MB</small><span id="file-list" class="file-list">尚未选择文件</span></label>
+        <div class="field-group"><label for="engine">翻译引擎 <span class="hint">本地免费 / 自建免费 / 商业 API</span></label><select id="engine" name="engine"><option value="none">仅格式转换（不翻译）</option><option value="ollama">Ollama · 本地免费大模型</option><option value="argos">Argos · 离线免费机器翻译</option><option value="libretranslate">LibreTranslate · 自建免费服务</option><option value="deepseek">DeepSeek · 付费 API</option><option value="openai">OpenAI · 付费 API</option><option value="deepl">DeepL · API（额度依方案）</option></select></div>
+        <details class="engine-settings" id="engine-settings" open><summary>⚙ 翻译引擎配置 <span class="hint">密钥仅本次任务使用</span></summary>
+          <div class="field-group" id="model-row"><label for="model">模型名称</label><input id="model" name="model" autocomplete="off" placeholder="按引擎自动填充"/></div>
+          <div class="field-group" id="endpoint-row"><label for="api_url">服务地址（API Base URL）</label><input id="api_url" name="api_url" autocomplete="url" placeholder="按引擎自动填充"/></div>
+          <div class="field-group" id="key-row"><label for="api_key">API Key <span class="hint">不保存到浏览器存储或文件</span></label><input id="api_key" name="api_key" type="password" autocomplete="off" placeholder="仅远程服务需要（某些本地服务可留空）"/></div>
+          <div class="settings-actions"><button type="button" id="test-engine" class="minor">测试连接与翻译（可能计费）</button><span id="engine-test-result" role="status"></span></div>
+          <div class="help" id="engine-help">请选择翻译引擎。</div>
+        </details>
+        <div class="twocol">
+          <div class="field-group"><label for="mode">译文模式</label><select name="mode" id="mode"><option value="zh">纯中文</option><option value="bilingual">中英双语对照</option></select></div>
+          <div class="field-group"><label for="pdf_layout">PDF 排版</label><select name="pdf_layout" id="pdf_layout"><option value="reflow">中文阅读版（重排）</option><option value="overlay">保留原页面（覆盖）</option></select></div>
+        </div>
+        <div class="twocol">
+          <div class="field-group"><label for="backend">PDF 解析引擎</label><select name="backend" id="backend"><option value="fitz">PyMuPDF（默认快速）</option><option value="docling">Docling（需选装）</option></select></div>
+          <div class="field-group"><label for="equation_ocr">公式 OCR</label><select name="equation_ocr" id="equation_ocr"><option value="off">默认关闭</option><option value="pix2tex">pix2tex（需选装）</option></select></div>
+        </div>
+        <details class="advanced"><summary>高级选项 <span>▾</span></summary><div class="checks"><label><input type="checkbox" name="vector_figures" checked/> 检测矢量插图</label><label><input type="checkbox" name="stitch_tables" checked/> 尝试恢复跨页表格</label><label><input type="checkbox" name="snapshots"/> 保留每页原图</label></div><label class="glossary-label" for="glossary">专业术语表（JSON，可留空）</label><textarea id="glossary" name="glossary" rows="3" placeholder='{"electrocardiogram":"心电图","wavelet":"小波"}'></textarea></details>
+        <div class="privacy-note" id="privacy">ⓘ 当前为格式转换模式，不调用翻译服务，不会自动把英文转换为中文。</div>
+        <button class="primary" id="submit" type="submit"><span>开始转换</span><span>→</span></button><div id="feedback" role="alert" class="feedback"></div>
+      </form>
+    </section>
+    <section class="panel results-panel" aria-label="任务状态">
+      <div class="panel-heading"><div><h2>转换结果</h2><p>查看页面级进度，预览 Markdown，下载完整资源。</p></div><span class="step">02 / 结果</span></div>
+      <div id="empty-state" class="empty-state"><div class="empty-icon">▤</div><h3>尚无转换任务</h3><p>左侧选择 PDF 并启动。每份文件会独立生成 Markdown、PDF、TXT 和 assets 图片目录。</p><div class="features"><span>✓ 公式与引用保护</span><span>✓ 多栏阅读顺序</span><span>✓ 中英段落对照</span><span>✓ 图片相对路径</span></div></div>
+      <div id="task-state" class="hidden"><div class="job-meta"><div><span id="state-badge" class="state-badge">排队中</span><span id="job-id" class="job-id"></span></div><strong id="percent">0%</strong></div><div class="progress-track"><div id="progress" class="progress-fill" style="width:0%"></div></div><div id="current-step" class="current-step">等待开始...</div><details class="log-wrap"><summary>处理日志</summary><pre id="logs"></pre></details><div id="warnings" class="warnings hidden"></div><div id="results" class="results"></div>
+        <div id="preview-wrap" class="preview-wrap hidden"><div class="preview-top"><strong>内容预览</strong><div class="tabs"><button type="button" id="tab-render" class="tab active">阅读视图</button><button type="button" id="tab-source" class="tab">Markdown 源码</button></div></div><div id="preview-render" class="render-content"></div><pre id="preview-source" class="source-content hidden"></pre><div class="preview-actions"><button type="button" class="minor" id="copy-md">复制完整 Markdown</button><span>复杂数学公式建议用 Typora / Obsidian 检查</span></div></div>
+      </div>
+    </section>
+  </div>
+  <section class="footnote"><div><strong>关于保真度</strong><p>Markdown 优先保持可编辑的文档结构；PDF 重排无法保证所有页面与原文逐像素一致，复杂公式、跨页表格应对照原件复核。</p></div><div><strong>关于隐私</strong><p>网页服务器默认只监听 127.0.0.1。使用 Ollama 可在本机处理；使用 DeepSeek / OpenAI / DeepL / 远程 LibreTranslate 会接收待翻译的文本。</p></div></section>
+</main>
+<footer>AcademicPDF Studio 0.4.1 · 在本机处理文件 · 生成结果保存在本地数据目录</footer>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

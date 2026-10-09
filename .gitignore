@@ -1,0 +1,37 @@
+# Python / dependency environments
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+*.egg-info/
+.coverage
+htmlcov/
+
+# Builds / packaging
+build/
+dist/
+*.spec
+
+# Local paper / model / translation caches
+paperstudio_output/
+AcademicPDF-Studio-Output/
+output/
+outputs/
+.cache/
+.huggingface/
+models/
+*.argosmodel
+*.tmp
+*.log
+
+# Misc editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
