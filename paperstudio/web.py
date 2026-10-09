@@ -33,7 +33,7 @@ from .translate import Translator
 
 MAX_UPLOAD_BYTES = 80 * 1024 * 1024
 MAX_FILES = 12
-WEB_VERSION = "0.4.1"
+WEB_VERSION = "0.4.2"
 STATIC_DIR = Path(__file__).with_name("web_static")
 LOG = logging.getLogger(__name__)
 
@@ -254,7 +254,7 @@ class AcademicHTTPServer(ThreadingHTTPServer):
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "AcademicPDF/0.4.1"
+    server_version = "AcademicPDF/0.4.2"
 
     def log_message(self, fmt, *args):
         LOG.info("%s %s", self.client_address[0], fmt % args)

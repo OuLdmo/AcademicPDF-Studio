@@ -2,7 +2,7 @@
 
 [![Project status](https://img.shields.io/badge/status-research%20prototype-orange)](#当前状态) [![Python](https://img.shields.io/badge/Python-3.11-blue)](pyproject.toml) [![License](https://img.shields.io/badge/own%20code-MIT-green)](LICENSE)
 
-**AcademicPDF Studio v0.4.1**：本地优先的学术 PDF 转换工作台，优先生成**结构清晰、可编辑的 Markdown**，并同时导出 PDF / TXT。提供本地浏览器界面、Tkinter 桌面界面和命令行；支持常规双栏 PDF、部分公式与表格恢复、图片/矢量图提取、中文翻译和双语对照。
+**AcademicPDF Studio v0.4.2**：本地优先的学术 PDF 转换工作台，优先生成**结构清晰、可编辑的 Markdown**，并同时导出 PDF / TXT。提供本地浏览器界面、Tkinter 桌面界面和命令行；支持常规双栏 PDF、部分公式与表格恢复、图片/矢量图提取、中文翻译和双语对照。
 
 > **研究原型，不是任意 PDF 均可 1:1 还原的产品。** Markdown 不能精确表示 PDF 的分页、多栏、绝对坐标与合并单元格。遇到失败或降级的页面，应查看 `manifest.json` 中的 `diagnostics`、`needs_review`，并对照原文复核。程序目前**没有交付经过 Windows 原机验收的预编译 EXE**。
 
@@ -50,11 +50,11 @@ python -m paperstudio examples/demo_paper.pdf -o output --engine ollama --model 
 
 ## 实际测试范围
 
-- v0.4.1 源码随附测试集：**51 项自动化测试**；可通过 `python -m pip install -r requirements-build.txt` 和 `python -m pytest tests -q` 运行。上游测试报告记录 Linux / Python 3.13 环境，不等价于 Windows 原生打包验收。
+- v0.4.2 源码随附测试集：**55 项自动化测试**；可通过 `python -m pip install -r requirements-build.txt` 和 `python -m pytest tests -q` 运行。新增 CP1252/ASCII/CP936 严格输出编码验证；测试通过不等于 Windows 原生 EXE 已完成验收。
 - `benchmark/fixtures/` 含 **3 份合成 IEEE 双栏风格样例**与参考标注；结构得分仅覆盖有限的已标注元素，**不应宣传为真实 IEEE 论文的整体准确率**。
 - 碰到 `MuPDF error: ... stitching function`，请保留受影响文档和 `manifest.json`。当前修复的是诊断和降级逻辑，不能保证从损坏/异常 PDF 里无损恢复全部内容。
 
-参阅：[验收报告](TEST_REPORT_v041.md) · [已知问题](KNOWN_ISSUES.md) · [未来路线图](ROADMAP.md) · [安全与隐私](SECURITY.md) · [架构说明](docs/ARCHITECTURE.md) · [v0.4.1 更新](CHANGELOG_v041.md)。
+参阅：[快速开始](QUICKSTART.md) · [故障排查](TROUBLESHOOTING.md) · [本次 CI 修复](CHANGELOG_v042.md) · [v0.4.1 验收报告](TEST_REPORT_v041.md) · [已知问题](KNOWN_ISSUES.md) · [未来路线图](ROADMAP.md) · [安全与隐私](SECURITY.md) · [架构说明](docs/ARCHITECTURE.md) · [v0.4.1 更新记录](CHANGELOG_v041.md)。
 
 ## 工程目录
 
@@ -76,3 +76,5 @@ Start-Desktop.cmd            Windows 桌面入口
 ## 参与改进
 
 欢迎提交可重复的 issue、测试用例与 PR。出现论文解析 bug 时，请附软件版本、Python/Windows 版本、失败页号、`manifest.json` 的诊断摘要；**请先移除个人信息、论文保密内容与 API Key**。详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+> **Windows Actions 修复（v0.4.2）**：已修复 CP1252 控制台中文输出导致的测试中断，参见 [故障排查](TROUBLESHOOTING.md)。

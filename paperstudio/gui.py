@@ -13,7 +13,7 @@ from .engines import ENGINES, defaults
 
 def main():
     root = tk.Tk()
-    root.title("AcademicPDF Studio 0.4.1 — 学术文献翻译")
+    root.title("AcademicPDF Studio 0.4.2 — 学术文献翻译")
     root.geometry("780x600")
     input_var = tk.StringVar()
     output_var = tk.StringVar(value=str(Path.cwd() / "paperstudio_output"))

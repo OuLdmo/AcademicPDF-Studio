@@ -145,7 +145,7 @@ def test_corrupted_non_pdf_not_report_success(tmp_path):
 
 
 def test_web_version_smoke_and_windows_imports():
-    assert WEB_VERSION == '0.4.1'
+    assert WEB_VERSION == '0.4.2'
     from tools.windows_bootstrap import RUNTIME_MODULES
     assert 'pymupdf' in RUNTIME_MODULES
     assert 'fitz' not in RUNTIME_MODULES

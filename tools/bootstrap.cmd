@@ -47,7 +47,7 @@ set "RESULT=%ERRORLEVEL%"
 if not "%RESULT%"=="0" (
   echo.
   echo [ERROR] Exit code: %RESULT%
-  echo Use the diagnostic script and WINDOWS_FIX_GUIDE.md to investigate.
+  echo Use the diagnostic script and TROUBLESHOOTING.md to investigate.
   if not defined CI pause
 )
 if not defined CI (

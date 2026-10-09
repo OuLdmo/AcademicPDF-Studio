@@ -24,7 +24,20 @@ RUNTIME_MODULES = ("pymupdf", "reportlab", "PIL", "requests", "tqdm")
 
 
 def msg(s: str) -> None:
-    print(s, flush=True)
+    """Log safely even when Windows CI redirects stdout through CP1252.
+
+    A redirected Windows console may advertise cp1252 / cp936 even
+    when our source is UTF-8. Never let diagnostic text crash installation
+    or test collection: escape characters that the code page cannot encode.
+    Chinese remains readable on terminals that support it.
+    """
+    output = sys.stdout
+    encoding = getattr(output, "encoding", None) or "utf-8"
+    try:
+        safe = s.encode(encoding, errors="backslashreplace").decode(encoding)
+    except (LookupError, UnicodeError):
+        safe = s.encode("ascii", errors="backslashreplace").decode("ascii")
+    print(safe, file=output, flush=True)
 
 
 def execute(argv: list[str], *, cwd: Path = ROOT, check: bool = True) -> int:
@@ -248,7 +261,7 @@ def main(argv=None) -> int:
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         msg("\n[ERROR] " + str(exc))
         msg("运行‘诊断环境.bat’可以查看安装状态。")
-        msg("完整说明见：WINDOWS_FIX_GUIDE.md")
+        msg("完整说明见：TROUBLESHOOTING.md")
         return 1
 
 

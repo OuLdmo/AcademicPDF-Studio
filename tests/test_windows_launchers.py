@@ -6,6 +6,7 @@ These checks run on Linux CI too; Windows-native execution is checked in
 from __future__ import annotations
 
 import importlib.util
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -41,6 +42,36 @@ def test_bootstrap_python_available_offline():
                           timeout=20)
     assert proc.returncode == 0, proc.stderr
     assert "AcademicPDF Studio" in proc.stdout
+
+
+@pytest.mark.parametrize("legacy_encoding", ["cp1252", "ascii", "cp936"])
+def test_doctor_under_legacy_windows_stdout_encoding(legacy_encoding):
+    """Prevent a UnicodeEncodeError on non-UTF8 Windows CI consoles."""
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = f"{legacy_encoding}:strict"
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "tools/windows_bootstrap.py"), "--mode", "doctor"],
+        cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        timeout=25,
+    )
+    assert proc.returncode == 0, proc.stderr.decode("utf-8", "replace")
+    assert b"AcademicPDF Studio" in proc.stdout
+    if legacy_encoding in ("cp1252", "ascii"):
+        assert b"\\u" in proc.stdout, "Han characters should be escaped"
+
+
+def test_launcher_smoke_under_legacy_windows_stdout_encoding():
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "cp1252:strict"
+    env["ACADEMICPDF_LAUNCHER_SMOKE"] = "1"
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "tools/windows_bootstrap.py"),
+         "--mode", "build-web"],
+        cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr.decode("utf-8", "replace")
+    assert b"CMD-LAUNCHER-SMOKE OK" in proc.stdout
 
 
 def test_web_self_test_ok():
